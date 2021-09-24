@@ -9,8 +9,8 @@
 #include "stpStateMachine.h"
 #include "stpMatrix.h"
 
-#include <ros/ros.h>
-#include <geometry_msgs/TransformStamped.h>
+//#include <ros/ros.h>
+//#include <geometry_msgs/TransformStamped.h>
 #include <geometry_msgs/WrenchStamped.h>
 #include <sensor_msgs/JointState.h>
 #include <sensor_msgs/Joy.h>
@@ -18,11 +18,11 @@
 #include <std_msgs/String.h>
 #include <std_msgs/Float64.h>
 #include <std_msgs/Empty.h>
-#include <tf2/convert.h>
-#include <tf2_eigen/tf2_eigen.h>
-#include <Eigen/Geometry>
-#include <string>
-#include <iostream>
+//#include <tf2/convert.h>
+//#include <tf2_eigen/tf2_eigen.h>
+//#include <Eigen/Geometry>
+//#include <string>
+//#include <iostream>
 
 
 #include <crtk_msgs/operating_state.h>

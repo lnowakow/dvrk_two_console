@@ -52,3 +52,7 @@ target_link_libraries(mtm_follow
 add_executable(cursor src/cursor.cpp)
 target_link_libraries(cursor
         ${catkin_LIBRARIES} stpLibrary)
+
+add_executable(stp_cursor src/stp_cursor.cpp)
+target_link_libraries(stp_cursor
+        ${catkin_LIBRARIES} stpLibrary)
