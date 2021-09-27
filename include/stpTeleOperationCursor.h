@@ -6,6 +6,7 @@
 #ifndef DVRK_TWO_CONSOLE_INCLUDE_STPTELEOPERATIONCURSOR_H_
 #define DVRK_TWO_CONSOLE_INCLUDE_STPTELEOPERATIONCURSOR_H_
 
+#include "stpJsonParser.h"
 #include "stpStateMachine.h"
 #include "stpMatrix.h"
 
@@ -24,7 +25,6 @@
 //#include <string>
 //#include <iostream>
 
-
 #include <crtk_msgs/operating_state.h>
 #include <crtk_msgs/StringStamped.h>
 
@@ -40,6 +40,7 @@ using stpRead = ros::Subscriber;
 class stpTeleOperationCursor {
  public:
   stpTeleOperationCursor();
+  stpTeleOperationCursor(std::string json_file);
   ~stpTeleOperationCursor();
 
   void Startup(void);
@@ -186,10 +187,10 @@ class stpTeleOperationCursor {
 
   struct {
     struct {
-      std::string footpedal;
+      std::string clutch;
     } topicName;
 
-    stpRead footpedal;
+    stpRead clutch;
     sensor_msgs::Joy m_clutch;
 
     double orientation_tolerance = 3.0;
@@ -213,6 +214,7 @@ class stpTeleOperationCursor {
  private:
   std::string mName;
   ros::NodeHandle nh;
+  stpJsonParser parser;
 
   // mMTM Callbacks
   void mtm_measured_cp_cb(const geometry_msgs::TransformStamped::ConstPtr& msg);
@@ -225,7 +227,7 @@ class stpTeleOperationCursor {
   void cursor_clicked_cb(const std_msgs::Bool::ConstPtr& msg);
   void cursor_operating_state_cb(const crtk_msgs::operating_state::ConstPtr& msg);
   // mOPERATOR Callbacks
-  void operator_footpedal_cb(const sensor_msgs::Joy::ConstPtr& msg);
+  void operator_clutch_cb(const sensor_msgs::Joy::ConstPtr& msg);
 
 };
 

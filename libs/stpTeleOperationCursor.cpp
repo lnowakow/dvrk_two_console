@@ -5,9 +5,20 @@
 
 #include "../include/stpTeleOperationCursor.h"
 
+void printTopicName(std::string topicName) {
+  std::cout << topicName << std::endl;
+}
+
 stpTeleOperationCursor::stpTeleOperationCursor():
 mTeleopState(mName, "DISABLED")
 {
+  Init();
+}
+
+stpTeleOperationCursor::stpTeleOperationCursor(std::string json_file):
+mTeleopState(mName, "DISABLED")
+{
+  parser.openFile(json_file);
   Init();
 }
 
@@ -40,6 +51,75 @@ void stpTeleOperationCursor::Init() {
   mTeleopState.SetEnterCallback("ENABLED", &stpTeleOperationCursor::EnterEnabled, this);
   mTeleopState.SetRunCallback("ENABLED", &stpTeleOperationCursor::RunEnabled, this);
   mTeleopState.SetTransitionCallback("ENABLED", &stpTeleOperationCursor::TransitionEnabled, this);
+
+  // Populate struct topicNames
+  std::string controllers = "controllers";
+  std::string MTM = parser.GetStringValue(controllers, "MTM");
+  printTopicName(MTM);
+  std::string CURSOR = parser.GetStringValue(controllers, "CURSOR");
+  printTopicName(CURSOR);
+  std::string FOOTPEDALS = parser.GetStringValue(controllers, "FOOTPEDAL");
+  printTopicName(FOOTPEDALS);
+  std::string CONSOLE = parser.GetStringValue(controllers, "CONSOLE");
+  printTopicName(CONSOLE);
+  std::string TELEOP = MTM + "_" + CURSOR.substr(CURSOR.find("/") + 1);
+  printTopicName(TELEOP);
+  // MESSAGE EVENTS
+  MessageEvents.topicName.current_state = TELEOP + parser.GetStringValue("MessageEvents", "current_state");
+  printTopicName(MessageEvents.topicName.current_state);
+  MessageEvents.topicName.desired_state = TELEOP + parser.GetStringValue("MessageEvents", "desired_state");
+  printTopicName(MessageEvents.topicName.desired_state);
+  MessageEvents.topicName.following = TELEOP + parser.GetStringValue("MessageEvents", "following");
+  printTopicName(MessageEvents.topicName.following);
+  // CONFIGURATION EVENTS
+  ConfigurationEvents.topicName.scale = CONSOLE + parser.GetStringValue("ConfigurationEvents", "scale");
+  printTopicName(ConfigurationEvents.topicName.scale);
+  ConfigurationEvents.topicName.rotation_locked = TELEOP + parser.GetStringValue("ConfigurationEvents", "rotation_locked");
+  printTopicName(ConfigurationEvents.topicName.rotation_locked);
+  ConfigurationEvents.topicName.translation_locked = TELEOP + parser.GetStringValue("ConfigurationEvents", "translation_locked");
+  printTopicName(ConfigurationEvents.topicName.translation_locked);
+  ConfigurationEvents.topicName.align_mtm = TELEOP + parser.GetStringValue("ConfigurationEvents", "align_mtm");
+  printTopicName(ConfigurationEvents.topicName.align_mtm);
+  // mMTM
+  mMTM.topicName.measured_cp = MTM + parser.GetStringValue("mMTM", "measured_cp");
+  printTopicName(mMTM.topicName.measured_cp);
+  mMTM.topicName.setpoint_cp = MTM + parser.GetStringValue("mMTM", "setpoint_cp");
+  printTopicName(mMTM.topicName.setpoint_cp);
+  mMTM.topicName.move_cp = MTM + parser.GetStringValue("mMTM", "move_cp");
+  printTopicName(mMTM.topicName.move_cp);
+  mMTM.topicName.gripper_measured_js = MTM + parser.GetStringValue("mMTM", "gripper_measured_js");
+  printTopicName(mMTM.topicName.gripper_measured_js);
+  mMTM.topicName.gripper_closed = MTM + parser.GetStringValue("mMTM", "gripper_closed");
+  printTopicName(mMTM.topicName.gripper_closed);
+  mMTM.topicName.lock_orientation = MTM + parser.GetStringValue("mMTM", "lock_orientation");
+  printTopicName(mMTM.topicName.lock_orientation);
+  mMTM.topicName.unlock_orientation = MTM + parser.GetStringValue("mMTM", "unlock_orientation");
+  printTopicName(mMTM.topicName.unlock_orientation);
+  mMTM.topicName.servo_cf_body = MTM + parser.GetStringValue("mMTM", "servo_cf_body");
+  printTopicName(mMTM.topicName.servo_cf_body);
+  mMTM.topicName.use_gravity_compensation = MTM + parser.GetStringValue("mMTM", "use_gravity_compensation");
+  printTopicName(mMTM.topicName.use_gravity_compensation);
+  mMTM.topicName.operating_state = MTM + parser.GetStringValue("mMTM", "operating_state");
+  printTopicName(mMTM.topicName.operating_state);
+  mMTM.topicName.state_command = MTM + parser.GetStringValue("mMTM", "state_command");
+  printTopicName(mMTM.topicName.state_command);
+  // mCURSOR
+  mCURSOR.topicName.measured_cp = CURSOR + parser.GetStringValue("mCURSOR", "measured_cp");
+  printTopicName(mCURSOR.topicName.measured_cp);
+  mCURSOR.topicName.servo_cp = CURSOR + parser.GetStringValue("mCURSOR", "servo_cp");
+  printTopicName(mCURSOR.topicName.servo_cp);
+  mCURSOR.topicName.cursor_clicked = CURSOR + parser.GetStringValue("mCURSOR", "cursor_clicked");
+  printTopicName(mCURSOR.topicName.cursor_clicked);
+  mCURSOR.topicName.operating_state = CURSOR + parser.GetStringValue("mCURSOR", "operating_state");
+  printTopicName(mCURSOR.topicName.operating_state);
+  mCURSOR.topicName.state_command = CURSOR + parser.GetStringValue("mCURSOR", "state_command");
+  printTopicName(mCURSOR.topicName.state_command);
+  // mBASEFRAME
+  mBASEFRAME.topicName.measured_cp = CURSOR + parser.GetStringValue("mCURSOR", "measured_cp");
+  printTopicName(mBASEFRAME.topicName.measured_cp);
+  // mOPERATOR
+  mOPERATOR.topicName.clutch = FOOTPEDALS + parser.GetStringValue("mOPERATOR", "clutch");
+  printTopicName(mOPERATOR.topicName.clutch);
 
   // Set up all publishers and subscribers
   // MESSAGE EVENTS
@@ -106,10 +186,10 @@ void stpTeleOperationCursor::Init() {
    *
    */
   // OPERATOR TOPICS
-  mOPERATOR.footpedal = nh.subscribe(mOPERATOR.topicName.footpedal,
-                                     PARAM_QUEUE,
-                                     &stpTeleOperationCursor::operator_footpedal_cb,
-                                     this);
+  mOPERATOR.clutch = nh.subscribe(mOPERATOR.topicName.clutch,
+                                  PARAM_QUEUE,
+                                  &stpTeleOperationCursor::operator_clutch_cb,
+                                  this);
   // default ConfigurationEvents
   ConfigurationEvents.m_scale.data = 0.3;
   ConfigurationEvents.m_rotation_locked.data = false;
@@ -584,7 +664,7 @@ void stpTeleOperationCursor::cursor_operating_state_cb(const crtk_msgs::operatin
  mCURSOR.m_operating_state = *msg;
 }
 
-void stpTeleOperationCursor::operator_footpedal_cb(const sensor_msgs::Joy::ConstPtr &msg) {
+void stpTeleOperationCursor::operator_clutch_cb(const sensor_msgs::Joy::ConstPtr &msg) {
   mOPERATOR.m_clutch = *msg;
 }
 

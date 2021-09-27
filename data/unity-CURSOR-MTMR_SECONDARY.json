@@ -1,0 +1,42 @@
+{
+  "controllers" : {
+    "MTM" : "/MTMR_SECONDARY",
+    "CURSOR" : "/CURSOR",
+    "FOOTPEDAL" : "/footpedals",
+    "CONSOLE" : "/console"
+  },
+  "MessageEvents" : {
+    "current_state" : "/current_state",
+    "desired_state" : "/desired_state",
+    "following" : "/following"
+  },
+  "ConfigurationEvents" : {
+    "scale" : "/teleop/scale",
+    "rotation_locked" : "/rotation_locked",
+    "translation_locked" : "/translation_locked",
+    "align_mtm" : "/align_mtm"
+  },
+  "mMTM" : {
+    "measured_cp" : "/measured_cp",
+    "setpoint_cp" : "/setpoint_cp",
+    "move_cp" : "/move_cp",
+    "gripper_measured_js" : "/gripper/measured_js",
+    "gripper_closed" : "/gripper/closed",
+    "lock_orientation" : "/lock_orientation",
+    "unlock_orientation" : "/unlock_orientation",
+    "servo_cf_body" : "/body/servo_cf",
+    "use_gravity_compensation" : "/use_gravity_compensation",
+    "operating_state" : "/operating_state",
+    "state_command" : "/state_command"
+  },
+  "mCURSOR" : {
+    "measured_cp" : "/measured_cp",
+    "servo_cp" : "/servo_cp",
+    "cursor_clicked" : "/cursor_clicked",
+    "operating_state" : "/operating_state",
+    "state_command" : "/state_command"
+  },
+  "mOPERATOR" : {
+    "clutch" : "/clutch"
+  }
+}

@@ -1,11 +1,11 @@
-#include "../include/stpTeleOperationCursor.h"
-#include <jsoncpp/json/value.h>
 #include <sys/stat.h>
 #include <unistd.h>
 #include <fstream>
-#include <boost/program_options.hpp>
 
-namespace po = boost::program_options;
+#include "../include/stpTeleOperationCursor.h"
+#include "../include/stpJsonParser.h"
+#include "../include/stpInputParser.h"
+
 
 inline bool fileExists(const std::string& filename) {
   struct stat buffer;
@@ -15,21 +15,29 @@ inline bool fileExists(const std::string& filename) {
 int main(int argc, char** argv) {
 
   ros::init(argc, argv, "CURSOR");
+  InputParser input(argc, argv);
 
-  try {
-    po::options_description desc("Allowed Options");
-    desc.add_options()("help", "JSON");
-    po::variables_map vm;
-    po::store(po::parse_command_line(argc, argv, desc), vm);
-    po::notify(vm);
-  } catch (std::exception &e) {
-    ROS_INFO("Error occured with command line parser: %s", e.what());
+  if (input.cmdOptionExists("-h")) {
+    ROS_INFO("-h : Help lists all possible flags and their associated actions");
+    ROS_INFO("-j : Expects a JSON file with all topic names necessary to initialize stpTeleOperationCursor Object");
+    return -1;
   }
-
-  stpTeleOperationCursor cursor;
-
-  while (ros::ok()) {
-    cursor.Run();
+  const std::string& filename = input.getCmdOption("-j");
+  if (!filename.empty()) {
+    // Check if file exists
+    if (fileExists(filename)) {
+      // Parse JSON file with topic names
+      stpTeleOperationCursor cursor(filename);
+      while (ros::ok()) {
+        cursor.Run();
+      }
+    } else {
+      ROS_ERROR("%s does not exist. Could not load ROS Topic names", filename.c_str());
+      return -2;
+    }
+  } else {
+    ROS_ERROR("File name not properly allocated. Exiting.");
+    return -3;
   }
 
   return 0;

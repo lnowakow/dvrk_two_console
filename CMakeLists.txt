@@ -13,12 +13,19 @@ find_package(catkin REQUIRED COMPONENTS
         crtk_msgs
         )
 
+find_package(PkgConfig REQUIRED)
+pkg_check_modules(JSONCPP jsoncpp)
+link_libraries(${JSONCPP_LIBRARIES})
+
+
 set(HEADER_FILES
         include/stpTeleOperationCursor.h
         include/stpStateMachine.h
         include/stpCallableVoidMethod.h
         include/stpCallableVoidBase.h
         include/stpMatrix.h
+        include/stpJsonParser.h
+        include/stpInputParser.h
         )
 set(LIBRARY_FILES
         libs/stpTeleOperationCursor.cpp
@@ -26,6 +33,7 @@ set(LIBRARY_FILES
         libs/stpCallableVoidMethod.cpp
         libs/stpCallableVoidBase.cpp
         libs/stpMatrix.cpp
+        libs/stpJsonParser.cpp
         )
 
 add_library(stpLibrary
@@ -56,3 +64,7 @@ target_link_libraries(cursor
 add_executable(stp_cursor src/stp_cursor.cpp)
 target_link_libraries(stp_cursor
         ${catkin_LIBRARIES} stpLibrary)
+
+add_executable(testFile src/testFile.cpp)
+target_link_libraries(testFile
+        ${catkin_LIBRARIES} stpLibrary ${JSONCPP_LIBRARIES})
