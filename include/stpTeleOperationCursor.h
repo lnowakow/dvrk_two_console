@@ -176,7 +176,6 @@ class stpTeleOperationCursor {
 
     bool isValid;
 
-    stpRead measured_cp;
     stpMatrix m_measured_cp;
     stpMatrix CartesianInitial;
   } mBASEFRAME;

@@ -105,6 +105,14 @@ class stpMatrix {
     return true;
   }
 
+  inline bool isValid(stpMatrix matrix) {
+    int rows = matrix.matrix_4_d_.rows(), cols = matrix.matrix_4_d_.cols();
+    if (rows == 4 && cols == 4) {
+      return true;
+    }
+    return false;
+  }
+
   Eigen::Isometry3d matrix_4_d_;
   geometry_msgs::TransformStamped transform_stamped_;
 

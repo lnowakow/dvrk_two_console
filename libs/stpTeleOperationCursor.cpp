@@ -115,7 +115,7 @@ void stpTeleOperationCursor::Init() {
   mCURSOR.topicName.state_command = CURSOR + parser.GetStringValue("mCURSOR", "state_command");
   printTopicName(mCURSOR.topicName.state_command);
   // mBASEFRAME
-  mBASEFRAME.topicName.measured_cp = CURSOR + parser.GetStringValue("mCURSOR", "measured_cp");
+  mBASEFRAME.m_measured_cp = parser.GetMatrixValue("mBASEFRAME", "base-frame");
   printTopicName(mBASEFRAME.topicName.measured_cp);
   // mOPERATOR
   mOPERATOR.topicName.clutch = FOOTPEDALS + parser.GetStringValue("mOPERATOR", "clutch");
@@ -163,7 +163,7 @@ void stpTeleOperationCursor::Init() {
                                       &stpTeleOperationCursor::mtm_operating_state_cb,
                                       this);
   mMTM.state_command = nh.advertise<crtk_msgs::StringStamped>(mMTM.topicName.state_command,
-                                                              STATE_QUEUE);
+                                    STATE_QUEUE);
   // CURSOR TOPICS
   mCURSOR.measured_cp = nh.subscribe(mCURSOR.topicName.measured_cp,
                                      COMMAND_QUEUE,
@@ -301,7 +301,7 @@ void stpTeleOperationCursor::UpdateInitialState(void) {
   mCURSOR.CartesianInitial.SetTranslation(mCURSOR.m_measured_cp.GetMatrixTranslation());
   UpdateAlignOffset();
   m_alignment_offset_initial = m_alignment_offset;
-  if (mBASEFRAME.m_measured_cp.isValid(mBASEFRAME.topicName.measured_cp)) {
+  if (mBASEFRAME.m_measured_cp.isValid(mBASEFRAME.m_measured_cp)) {
     mBASEFRAME.CartesianInitial.SetRotation(mBASEFRAME.m_measured_cp.GetMatrixRotation());
     mBASEFRAME.CartesianInitial.SetTranslation(mBASEFRAME.m_measured_cp.GetMatrixTranslation());
   }
@@ -387,7 +387,7 @@ void stpTeleOperationCursor::RunAllStates(void) {
     mTeleopState.SetDesiredState("DISABLED");
   }
 
-  // Get PSM Cartesian Position
+  // Get CURSOR Cartesian Position
   executionResult = waitForMessage<geometry_msgs::TransformStamped>(mCURSOR.topicName.measured_cp,
                                                                     timeOut);
   if (executionResult == nullptr) {
@@ -397,9 +397,7 @@ void stpTeleOperationCursor::RunAllStates(void) {
 
   // Get Base-Frame Cartesian Position if Available
   if (mBASEFRAME.isValid) {
-    executionResult = waitForMessage<geometry_msgs::TransformStamped>(mBASEFRAME.topicName.measured_cp,
-                                                                      timeOut);
-    if (executionResult == nullptr) {
+    if (mBASEFRAME.m_measured_cp.isValid(mBASEFRAME.m_measured_cp)) {
       ROS_INFO("%s: unable to get cartesian position from BASEFRAME", this->mName.c_str());
       mTeleopState.SetDesiredState("DISABLED");
     }
@@ -603,7 +601,7 @@ void stpTeleOperationCursor::RunEnabled(void) {
       cursorCartesianGoal.SetRotation(cursorTransform.GetMatrixRotation());
 
       // take into account changes in CURSOR baseframe if any
-      if (mBASEFRAME.m_measured_cp.isValid(mBASEFRAME.topicName.measured_cp)) {
+      if (mBASEFRAME.m_measured_cp.isValid(mBASEFRAME.m_measured_cp)) {
         stpMatrix baseFrame(mBASEFRAME.m_measured_cp);
         stpMatrix baseFrameChange;
         baseFrameChange.SetRotation(baseFrame.Inverse()*mBASEFRAME.CartesianInitial.GetMatrixRotation());

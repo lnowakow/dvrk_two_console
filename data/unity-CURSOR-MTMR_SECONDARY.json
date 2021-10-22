@@ -36,6 +36,12 @@
     "operating_state" : "/operating_state",
     "state_command" : "/state_command"
   },
+  "mBASEFRAME" : {
+    "base-frame" : [[  1.0,  0.0,          0.0,          0.20],
+                    [  0.0, -0.866025404,  0.5,          0.0 ],
+                    [  0.0, -0.5,         -0.866025404,  0.0 ],
+                    [  0.0,  0.0,          0.0,          1.0 ]]
+  },
   "mOPERATOR" : {
     "clutch" : "/clutch"
   }

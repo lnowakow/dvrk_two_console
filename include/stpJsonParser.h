@@ -12,6 +12,8 @@
 #include <boost/algorithm/string.hpp>
 #include <fstream>
 #include <iostream>
+#include <tf2_eigen/tf2_eigen.h>
+#include <tf2/convert.h>
 
 
 class stpJsonParser {
@@ -37,9 +39,43 @@ class stpJsonParser {
     return value;
   }
 
+  inline Eigen::Isometry3d GetMatrixValue(std::string structName, std::string baseframe) {
+    std::cout << "Baseframe shows: " << roots[structName][baseframe] << '\n';
+
+    Eigen::Matrix3d rotation;
+    rotation <<
+      (double)std::stof(roots[structName][baseframe][0][0].toStyledString()),
+      (double)std::stof(roots[structName][baseframe][0][1].toStyledString()),
+      (double)std::stof(roots[structName][baseframe][0][2].toStyledString()),
+      (double)std::stof(roots[structName][baseframe][1][0].toStyledString()),
+      (double)std::stof(roots[structName][baseframe][1][1].toStyledString()),
+      (double)std::stof(roots[structName][baseframe][1][2].toStyledString()),
+      (double)std::stof(roots[structName][baseframe][2][0].toStyledString()),
+      (double)std::stof(roots[structName][baseframe][2][1].toStyledString()),
+      (double)std::stof(roots[structName][baseframe][2][2].toStyledString());
+    //std::cout << rotation << '\n';
+
+    Eigen::Matrix3Xd translation(3,1);
+    translation <<
+      (double)std::stof(roots[structName][baseframe][0][3].toStyledString()),
+      (double)std::stof(roots[structName][baseframe][1][3].toStyledString()),
+      (double)std::stof(roots[structName][baseframe][2][3].toStyledString());
+    //std::cout << translation << '\n';
+
+    Eigen::Isometry3d Matrix;
+    Matrix.matrix().block(0,0,3,3) = rotation;
+    Matrix.matrix().block(0,3,3,1) = translation;
+
+
+    return Matrix;
+  }
+
+
+
  private:
   Json::Reader reader;
   Json::Value roots;
+
 
 };
 

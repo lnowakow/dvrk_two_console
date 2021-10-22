@@ -15,6 +15,6 @@ int main(int argc, char** argv) {
   const std::string& file_name = input.getCmdOption("-j");
   if (!file_name.empty()) {
     stpJsonParser parser(file_name);
-    std::cout << parser.GetStringValue("controllers", "MTM");
+    std::cout << parser.GetMatrixValue("mBASEFRAME", "base-frame").matrix();
   }
 }
