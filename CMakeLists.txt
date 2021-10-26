@@ -26,6 +26,7 @@ set(HEADER_FILES
         include/stpMatrix.h
         include/stpJsonParser.h
         include/stpInputParser.h
+        include/stpUnityConsole.h
         )
 set(LIBRARY_FILES
         libs/stpTeleOperationCursor.cpp
@@ -34,6 +35,7 @@ set(LIBRARY_FILES
         libs/stpCallableVoidBase.cpp
         libs/stpMatrix.cpp
         libs/stpJsonParser.cpp
+        libs/stpUnityConsole.cpp
         )
 
 add_library(stpLibrary

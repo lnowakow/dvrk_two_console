@@ -271,6 +271,7 @@ void stpTeleOperationCursor::SetDesiredState(const std::string& state) {
   }
   // return is already the desired state
   if (mTeleopState.DesiredState() == state) {
+    ROS_INFO("Already in desired state: %s", mTeleopState.CurrentState().c_str());
     MessageEvents.desired_state.publish(desiredState);
     return;
   }
@@ -403,6 +404,7 @@ void stpTeleOperationCursor::RunAllStates(void) {
     }
   }
 
+  //ROS_INFO("In RunAllStates: mTeleopState's desired state is %s and the current state is %s", mTeleopState.DesiredState().c_str(), mTeleopState.CurrentState().c_str());
   // Check if anyone wanted to disable anyway
   if ((mTeleopState.DesiredState() == "DISABLED") && (mTeleopState.CurrentState() != "DISABLED")) {
     set_following(false);
@@ -410,21 +412,27 @@ void stpTeleOperationCursor::RunAllStates(void) {
     return;
   }
 
+  //ROS_INFO("In RunAllStates: mTeleopState's current state is %s: ", mTeleopState.CurrentState().c_str());
   // Monitor state of arms if needed
   if ((mTeleopState.CurrentState() != "DISABLED") && (mTeleopState.CurrentState() != "SETTING_ARMS_STATE")) {
+    ROS_INFO("mCURSOR operating state: %s, mCURSOR is_homed: %s", mCURSOR.m_operating_state.state.c_str(), mCURSOR.m_operating_state.is_homed);
     if (mCURSOR.m_operating_state.state != "ENABLED" || !mCURSOR.m_operating_state.is_homed) {
-      ROS_INFO("%s: CURSOR is not in state \"ENABLED\" anrmore", this->mName.c_str());
+      ROS_INFO("%s: CURSOR is not in state \"ENABLED\" anymore", this->mName.c_str());
       mTeleopState.SetDesiredState("DISABLED");
     }
+    ROS_INFO("mMTM operating state: %s, mMTM is_homed: %s", mMTM.m_operating_state.state.c_str(), mMTM.m_operating_state.is_homed);
     if (mMTM.m_operating_state.state != "ENABLED" || !mMTM.m_operating_state.is_homed) {
-      ROS_INFO("%s: MTM is not in state \"ENABLED\" anrmore", this->mName.c_str());
+      ROS_INFO("%s: MTM is not in state \"ENABLED\" anymore", this->mName.c_str());
       mTeleopState.SetDesiredState("DISABLED");
     }
   }
+  ROS_INFO("Nothing is actively disabling teleop.");
 }
 
 void stpTeleOperationCursor::TransitionDisabled(void) {
+  ROS_INFO("Attempting transition away from disabled.");
   if (mTeleopState.DesiredStateIsNotCurrent()) {
+    ROS_INFO("Desired state is not current state");
     mTeleopState.SetCurrentState("SETTING_ARMS_STATE");
   }
 }

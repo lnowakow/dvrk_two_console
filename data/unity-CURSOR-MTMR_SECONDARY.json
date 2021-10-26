@@ -1,6 +1,6 @@
 {
   "controllers" : {
-    "MTM" : "/MTMR_SECONDARY",
+    "MTM" : "/MTMR_PRIMARY",
     "CURSOR" : "/CURSOR",
     "FOOTPEDAL" : "/footpedals",
     "CONSOLE" : "/console"
