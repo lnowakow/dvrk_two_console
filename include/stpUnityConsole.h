@@ -13,39 +13,12 @@
 #include <diagnostic_msgs/KeyValue.h>
 
 class stpUnityConsole : public stpTeleOperationCursor {
-  class TeleopCursor {
-   public:
-    TeleopCursor(const std::string& name,
-                const std::string& nameMTM,
-                const std::string& nameCursor);
-
-    /*! Create and Configure the robot arm. */
-    void ConfigureTeleop(const stpJsonParser& jsonConfig);
-
-    /*! Accessors */
-    const std::string& Name(void) const;
-
-    /*! Turn on/off selected */
-    inline const bool & Selected(void) const {
-      return mSelected;
-    }
-    inline void SetSelected(const bool selected) {
-      mSelected = selected;
-    }
-
-   protected:
-    bool mSelected;
-    std::string m_name;
-    std::string mMTMName;
-    std::string mCURSORName;
-  };
 
   stpUnityConsole();
   inline ~stpUnityConsole() {}
 
   /*! Configure console using JSON file. To test if the configuration successed, use method Configured() */
   void Configure(const std::string& filename);
-  const bool & Configured(void) const;
 
   void Startup(void);
   void Run(void);
@@ -59,19 +32,6 @@ class stpUnityConsole : public stpTeleOperationCursor {
   bool mTeleopCursorRunning;
   bool mTeleopCursorAligning;
 
-  /*! List to manage multiple PSM teleoperations */
-  typedef std::map<std::string, TeleopCursor* > TeleopCursorList;
-  TeleopCursorList mTeleopsCursor;
-
-  /*! List to manage the teleopCursor components for each MTM */
-  typedef std::multimap<std::string, TeleopCursor* > TeleopCursorByMTMList;
-  typedef TeleopCursorByMTMList::iterator TeleopCursorByMTMIterator;
-  typedef TeleopCursorByMTMList::const_iterator TeleopCursorByMTMConstIterator;
-  TeleopCursorByMTMList mTeleopsCursorByMTM;
-  /*! Name of default MTM to cycle teleops if no name is provided */
-  std::string mTeleopMTMToCycle;
-
-  bool AddTeleopCursorInterfaces(TeleopCursor* teleop);
   bool ConfigureCursorTeleopJSON(const stpJsonParser& jsonTeleop);
 
   void teleop_enable(const bool& enable);

@@ -60,7 +60,7 @@ void stpTeleOperationCursor::Init() {
   printTopicName(CURSOR);
   std::string FOOTPEDALS = parser.GetStringValue(controllers, "FOOTPEDAL");
   printTopicName(FOOTPEDALS);
-  std::string CONSOLE = parser.GetStringValue(controllers, "CONSOLE");
+  std::string CONSOLE = parser.GetStringValue(controllers, "dVRK-CONSOLE");
   printTopicName(CONSOLE);
   std::string TELEOP = MTM + "_" + CURSOR.substr(CURSOR.find("/") + 1);
   printTopicName(TELEOP);
@@ -115,7 +115,7 @@ void stpTeleOperationCursor::Init() {
   mCURSOR.topicName.state_command = CURSOR + parser.GetStringValue("mCURSOR", "state_command");
   printTopicName(mCURSOR.topicName.state_command);
   // mBASEFRAME
-  mBASEFRAME.m_measured_cp = parser.GetMatrixValue("mBASEFRAME", "base-frame");
+  //mBASEFRAME.m_measured_cp = parser.GetMatrixValue("mBASEFRAME", "base-frame");
   printTopicName(mBASEFRAME.topicName.measured_cp);
   // mOPERATOR
   mOPERATOR.topicName.clutch = FOOTPEDALS + parser.GetStringValue("mOPERATOR", "clutch");

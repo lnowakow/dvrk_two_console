@@ -39,27 +39,34 @@ class stpJsonParser {
     return value;
   }
 
-  inline Eigen::Isometry3d GetMatrixValue(std::string structName, std::string baseframe) {
-    std::cout << "Baseframe shows: " << roots[structName][baseframe] << '\n';
+  inline std::string GetStringValue(std::string structName, std::string paramName, std::string fieldValue) {
+    std::string value = roots[structName][paramName][fieldValue].toStyledString();
+    value.erase(std::remove(value.begin(), value.end(),'"'), value.end());
+    value.erase(std::remove(value.begin(), value.end(),'\n'), value.end());
+    return value;
+  }
+
+  inline Eigen::Isometry3d GetMatrixValue(std::string structName, std::string paramName, std::string baseframe) {
+    std::cout << "Baseframe shows: " << roots[structName][paramName][baseframe] << '\n';
 
     Eigen::Matrix3d rotation;
     rotation <<
-      (double)std::stof(roots[structName][baseframe][0][0].toStyledString()),
-      (double)std::stof(roots[structName][baseframe][0][1].toStyledString()),
-      (double)std::stof(roots[structName][baseframe][0][2].toStyledString()),
-      (double)std::stof(roots[structName][baseframe][1][0].toStyledString()),
-      (double)std::stof(roots[structName][baseframe][1][1].toStyledString()),
-      (double)std::stof(roots[structName][baseframe][1][2].toStyledString()),
-      (double)std::stof(roots[structName][baseframe][2][0].toStyledString()),
-      (double)std::stof(roots[structName][baseframe][2][1].toStyledString()),
-      (double)std::stof(roots[structName][baseframe][2][2].toStyledString());
+      (double)std::stof(roots[structName][paramName][baseframe][0][0].toStyledString()),
+      (double)std::stof(roots[structName][paramName][baseframe][0][1].toStyledString()),
+      (double)std::stof(roots[structName][paramName][baseframe][0][2].toStyledString()),
+      (double)std::stof(roots[structName][paramName][baseframe][1][0].toStyledString()),
+      (double)std::stof(roots[structName][paramName][baseframe][1][1].toStyledString()),
+      (double)std::stof(roots[structName][paramName][baseframe][1][2].toStyledString()),
+      (double)std::stof(roots[structName][paramName][baseframe][2][0].toStyledString()),
+      (double)std::stof(roots[structName][paramName][baseframe][2][1].toStyledString()),
+      (double)std::stof(roots[structName][paramName][baseframe][2][2].toStyledString());
     //std::cout << rotation << '\n';
 
     Eigen::Matrix3Xd translation(3,1);
     translation <<
-      (double)std::stof(roots[structName][baseframe][0][3].toStyledString()),
-      (double)std::stof(roots[structName][baseframe][1][3].toStyledString()),
-      (double)std::stof(roots[structName][baseframe][2][3].toStyledString());
+      (double)std::stof(roots[structName][paramName][baseframe][0][3].toStyledString()),
+      (double)std::stof(roots[structName][paramName][baseframe][1][3].toStyledString()),
+      (double)std::stof(roots[structName][paramName][baseframe][2][3].toStyledString());
     //std::cout << translation << '\n';
 
     Eigen::Isometry3d Matrix;

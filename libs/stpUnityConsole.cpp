@@ -12,10 +12,6 @@ void stpUnityConsole::Configure(const std::string &filename) {
 
 }
 
-const bool &stpUnityConsole::Configured(void) const {
-
-}
-
 void stpUnityConsole::Startup(void) {
 }
 
@@ -27,10 +23,6 @@ void stpUnityConsole::Cleanup(void) {
 }
 
 bool stpUnityConsole::Connect(void) {
-  return false;
-}
-
-bool stpUnityConsole::AddTeleopCursorInterfaces(stpUnityConsole::TeleopCursor *teleop) {
   return false;
 }
 
@@ -63,6 +55,9 @@ void stpUnityConsole::EventSelectedTeleopTeleopCursors(void) const {
 }
 
 void stpUnityConsole::UpdateTeleopState(void) {
-
+  // Check if teleop is enabled
+  if (!mTeleopEnabled) {
+    bool freezeNeeded = false;
+  }
 }
 
