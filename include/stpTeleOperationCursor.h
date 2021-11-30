@@ -52,9 +52,12 @@ class stpTeleOperationCursor {
   void lock_translation(const bool& lock);
   void set_align_mtm(const bool& alignMTM);
 
- protected:
+  void Init(const std::string &filename,
+            const std::string &mtmName,
+            const std::string &cursorName,
+            const Eigen::Isometry3d &baseframe);
 
-  void Init(void);
+ protected:
 
   void Clutch(const bool& clutch);
 
@@ -214,6 +217,7 @@ class stpTeleOperationCursor {
   std::string mName;
   ros::NodeHandle nh;
   stpJsonParser parser;
+  std::string MTM, CURSOR;
 
   // mMTM Callbacks
   void mtm_measured_cp_cb(const geometry_msgs::TransformStamped::ConstPtr& msg);

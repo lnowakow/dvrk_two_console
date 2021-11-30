@@ -5,6 +5,8 @@
 #ifndef DVRK_TWO_CONSOLE_LIBS_STPUNITYCONSOLE_H_
 #define DVRK_TWO_CONSOLE_LIBS_STPUNITYCONSOLE_H_
 
+#include "stpJsonParser.h"
+#include "stpTeleOperationCursor.h"
 #include <string>
 #include <map>
 
@@ -19,6 +21,9 @@ class stpUnityConsole : public stpTeleOperationCursor {
 
   /*! Configure console using JSON file. To test if the configuration successed, use method Configured() */
   void Configure(const std::string& filename);
+
+  /*! Method to check if the configuration was successful, ideally called after a call to Configure */
+  const bool & Configured(void) const;
 
   void Startup(void);
   void Run(void);
@@ -50,6 +55,11 @@ class stpUnityConsole : public stpTeleOperationCursor {
     stpWrite teleop_psm_selected;
     stpWrite teleop_psm_unselected;
   } ConfigurationEvents;
+
+ private:
+  stpJsonParser parser;
+  stpTeleOperationCursor right_teleop, left_teleop;
+
 
 };
 

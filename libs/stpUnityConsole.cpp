@@ -10,8 +10,27 @@ stpUnityConsole::stpUnityConsole() {
 
 void stpUnityConsole::Configure(const std::string &filename) {
 
+  mConfigured = false;
+  parser.openFile(filename.c_str());
+  std::string default_config_file = parser.GetStringValue("Topic-Config");
+
+  // Console 1 Teleoperation configuration
+  std::string cursor1Name = parser.GetStringValue("Console1", "CURSOR");
+  // Right Hand
+  std::string mtm1rName = parser.GetStringValue("Console1", "MTMR", "name");
+  Eigen::Isometry3d baseframe1r = parser.GetMatrixValue("Console1", "MTMR", "BASEFRAME");
+  right_teleop.Init(default_config_file, mtm1rName, cursor1Name, baseframe1r);
+  // Left Hand
+  std::string mtm1lName = parser.GetStringValue("Console1", "MTMR", "name");
+  Eigen::Isometry3d baseframe1l = parser.GetMatrixValue("Console1", "MTMR", "BASEFRAME");
+  left_teleop.Init(default_config_file, mtm1lName, cursor1Name, baseframe1l);
+
+  mConfigured = true;
 }
 
+const bool & stpUnityConsole::Configured(void) const {
+    return mConfigured;
+}
 void stpUnityConsole::Startup(void) {
 }
 

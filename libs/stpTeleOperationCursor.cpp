@@ -12,20 +12,28 @@ void printTopicName(std::string topicName) {
 stpTeleOperationCursor::stpTeleOperationCursor():
 mTeleopState(mName, "DISABLED")
 {
-  Init();
+  ROS_INFO("stpTeleoperation Object was not initiated.  Please initialize object before using.");
 }
 
 stpTeleOperationCursor::stpTeleOperationCursor(std::string json_file):
 mTeleopState(mName, "DISABLED")
 {
-  parser.openFile(json_file);
-  Init();
+  Eigen::Isometry3d emptyInit;
+  // Baseframe initialized with empty matrix.
+  ROS_ERROR("This Initialization method is not yet fully supported.");
+  Init(json_file, std::__cxx11::string(), std::__cxx11::string(), emptyInit);
 }
 
 stpTeleOperationCursor::~stpTeleOperationCursor() {
 }
 
-void stpTeleOperationCursor::Init() {
+void stpTeleOperationCursor::Init(const std::string &filename,
+                                  const std::string &mtmName,
+                                  const std::string &cursorName,
+                                  const Eigen::Isometry3d &baseframe) {
+
+  parser.openFile(filename);
+
   // Configure the state machine
   mTeleopState.AddState("SETTING_ARMS_STATE");
   mTeleopState.AddState("ALIGNING_MTM");
@@ -54,9 +62,9 @@ void stpTeleOperationCursor::Init() {
 
   // Populate struct topicNames
   std::string controllers = "controllers";
-  std::string MTM = parser.GetStringValue(controllers, "MTM");
+  MTM = mtmName;
   printTopicName(MTM);
-  std::string CURSOR = parser.GetStringValue(controllers, "CURSOR");
+  CURSOR = cursorName;
   printTopicName(CURSOR);
   std::string FOOTPEDALS = parser.GetStringValue(controllers, "FOOTPEDAL");
   printTopicName(FOOTPEDALS);
@@ -115,7 +123,7 @@ void stpTeleOperationCursor::Init() {
   mCURSOR.topicName.state_command = CURSOR + parser.GetStringValue("mCURSOR", "state_command");
   printTopicName(mCURSOR.topicName.state_command);
   // mBASEFRAME
-  //mBASEFRAME.m_measured_cp = parser.GetMatrixValue("mBASEFRAME", "base-frame");
+  mBASEFRAME.m_measured_cp = baseframe;
   printTopicName(mBASEFRAME.topicName.measured_cp);
   // mOPERATOR
   mOPERATOR.topicName.clutch = FOOTPEDALS + parser.GetStringValue("mOPERATOR", "clutch");

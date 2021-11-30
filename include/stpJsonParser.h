@@ -32,6 +32,10 @@ class stpJsonParser {
     }
   }
 
+  inline std::string GetStringValue(std::string structName) {
+    return roots[structName].toStyledString();
+  }
+
   inline std::string GetStringValue(std::string structName, std::string topicName) {
     std::string value = roots[structName][topicName].toStyledString();
     value.erase(std::remove(value.begin(), value.end(),'"'), value.end());
