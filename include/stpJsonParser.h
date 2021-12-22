@@ -27,13 +27,18 @@ class stpJsonParser {
   inline void openFile(std::string document) {
     std::ifstream  file(document, std::ifstream::binary);
     if (file.is_open()) {
-      std::cout << "file is open\n";
+      std::cout << "file: " << document << " is open\n";
       reader.parse(file, roots);
+    } else {
+      std::cout << "File failed to open\n";
     }
   }
 
   inline std::string GetStringValue(std::string structName) {
-    return roots[structName].toStyledString();
+    std::string value = roots[structName].toStyledString();
+    value.erase(std::remove(value.begin(), value.end(),'"'), value.end());
+    value.erase(std::remove(value.begin(), value.end(),'\n'), value.end());
+    return value;
   }
 
   inline std::string GetStringValue(std::string structName, std::string topicName) {
@@ -51,7 +56,7 @@ class stpJsonParser {
   }
 
   inline Eigen::Isometry3d GetMatrixValue(std::string structName, std::string paramName, std::string baseframe) {
-    std::cout << "Baseframe shows: " << roots[structName][paramName][baseframe] << '\n';
+    //std::cout << "Baseframe shows: " << roots[structName][paramName][baseframe] << '\n';
 
     Eigen::Matrix3d rotation;
     rotation <<

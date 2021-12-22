@@ -2,6 +2,7 @@
 #include <unistd.h>
 #include <fstream>
 
+#include "../include/stpUnityConsole.h"
 #include "../include/stpTeleOperationCursor.h"
 #include "../include/stpJsonParser.h"
 #include "../include/stpInputParser.h"
@@ -27,9 +28,11 @@ int main(int argc, char** argv) {
     // Check if file exists
     if (fileExists(filename)) {
       // Parse JSON file with topic names
-      stpTeleOperationCursor cursor(filename);
+      //stpTeleOperationCursor cursor(filename);
+      stpUnityConsole console1("stpConsole1", filename, "MTMR_PRIMARY-R1_CURSOR", "MTML_PRIMARY-L1_CURSOR");
       while (ros::ok()) {
-        cursor.Run();
+        //cursor.Run();
+        console1.Run();
       }
     } else {
       ROS_ERROR("%s does not exist. Could not load ROS Topic names", filename.c_str());

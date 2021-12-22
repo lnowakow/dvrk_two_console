@@ -18,6 +18,7 @@ class stpStateMachine {
  public:
   using StateType = std::string;
 
+  stpStateMachine() { ROS_INFO("State Machine default constructor called"); };
   stpStateMachine(const std::string& name, const StateType initialState):
   mName(name),
   mFirstRun(true),
@@ -29,6 +30,8 @@ class stpStateMachine {
   mPreviousState(initialState),
   mPreviousDesiredState(initialState)
   {
+    ROS_INFO("%s: State machine successfully initialized.", mName.c_str());
+    ROS_INFO("%s: State machine mFirstRun: %s", mName.c_str(), mFirstRun ? "true" : "false");
     AddState(initialState);
   }
 
@@ -194,8 +197,8 @@ class stpStateMachine {
               mLeaveCallbacks,
               mTransitionCallbacks;
   stpCallableVoidBase *mRunCallback,
-                      *mCurrentRunCallback,
-                      *mCurrentTransitionCallback,
+                      *mCurrentRunCallback{},
+                      *mCurrentTransitionCallback{},
                       *mStateChangeCallback;
 
   StateType mCurrentState,
@@ -205,8 +208,6 @@ class stpStateMachine {
 
   typedef std::map<StateType, bool> StateMap;
   StateMap mStates;
- private:
-  stpStateMachine();
 
 };
 

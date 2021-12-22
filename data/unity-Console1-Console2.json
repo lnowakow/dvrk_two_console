@@ -1,7 +1,8 @@
 {
-  "Console1": {
+  "stpConsole1": {
     "MTMR": {
       "name": "MTMR_PRIMARY",
+      "CURSOR": "R1_CURSOR",
       "BASEFRAME" : [[  1.0,  0.0,          0.0,          0.20],
                      [  0.0, -0.866025404,  0.5,          0.0 ],
                      [  0.0, -0.5,         -0.866025404,  0.0 ],
@@ -9,16 +10,17 @@
     },
     "MTML": {
       "name": "MTML_PRIMARY",
+      "CURSOR": "L1_CURSOR",
       "BASEFRAME" : [[  1.0,  0.0,          0.0,          0.20],
                      [  0.0, -0.866025404,  0.5,          0.0 ],
                      [  0.0, -0.5,         -0.866025404,  0.0 ],
                      [  0.0,  0.0,          0.0,          1.0 ]]
-    },
-    "CURSOR": "CURSOR1"
+    }
   },
-  "Console2": {
+  "stpConsole2": {
     "MTMR": {
       "name": "MTMR_SECONDARY",
+      "CURSOR": "R2_CURSOR",
       "BASEFRAME" : [[  1.0,  0.0,          0.0,          0.20],
                      [  0.0, -0.866025404,  0.5,          0.0 ],
                      [  0.0, -0.5,         -0.866025404,  0.0 ],
@@ -26,12 +28,12 @@
     },
     "MTML": {
       "name": "MTML_SECONDARY",
+      "CURSOR": "L2_CURSOR",
       "BASEFRAME" : [[  1.0,  0.0,          0.0,          0.20],
                      [  0.0, -0.866025404,  0.5,          0.0 ],
                      [  0.0, -0.5,         -0.866025404,  0.0 ],
                      [  0.0,  0.0,          0.0,          1.0 ]]
-    },
-    "CURSOR": "CURSOR2"
+    }
   },
   "Topic-Config": "data/generic_topic_configuration.json"
 }

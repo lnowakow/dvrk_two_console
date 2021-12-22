@@ -40,7 +40,8 @@ using stpRead = ros::Subscriber;
 class stpTeleOperationCursor {
  public:
   stpTeleOperationCursor();
-  stpTeleOperationCursor(std::string json_file);
+  stpTeleOperationCursor(const std::string &name);
+  //stpTeleOperationCursor(std::string json_file);
   ~stpTeleOperationCursor();
 
   void Startup(void);
@@ -56,6 +57,20 @@ class stpTeleOperationCursor {
             const std::string &mtmName,
             const std::string &cursorName,
             const Eigen::Isometry3d &baseframe);
+
+  void state_command(const std::string& command);
+
+  inline std::string getTeleopName() {
+    return mName;
+  }
+
+  inline std::string getMTMName() {
+    return MTM;
+  }
+
+  inline std::string getCURSORName() {
+    return CURSOR;
+  }
 
  protected:
 
@@ -93,7 +108,7 @@ class stpTeleOperationCursor {
   } ConfigurationEvents;
 
   void SetDesiredState(const std::string& state);
-  void state_command(const std::string& command);
+
 
   stpMatrix UpdateAlignOffset(void);
   void UpdateInitialState(void);
@@ -214,7 +229,7 @@ class stpTeleOperationCursor {
   stpStateMachine mTeleopState;
 
  private:
-  std::string mName;
+  std::string mName = "stpConsole1";
   ros::NodeHandle nh;
   stpJsonParser parser;
   std::string MTM, CURSOR;

@@ -49,7 +49,6 @@ void stpStateMachine::Run(void) {
     if (mStateChangeCallback) {
       mStateChangeCallback->Execute();
     }
-
     mFirstRun = false;
   }
   // Check if a transition should happen

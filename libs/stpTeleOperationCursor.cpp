@@ -12,9 +12,16 @@ void printTopicName(std::string topicName) {
 stpTeleOperationCursor::stpTeleOperationCursor():
 mTeleopState(mName, "DISABLED")
 {
-  ROS_INFO("stpTeleoperation Object was not initiated.  Please initialize object before using.");
+  ROS_INFO("stpTeleoperation Object was created but not initialized.  Please initialize object before using.");
 }
 
+stpTeleOperationCursor::stpTeleOperationCursor(const std::string &name):
+    mTeleopState(name, "DISABLED")
+{
+  ROS_INFO("stpTeleoperation Object was created but not initialized.  Please initialize object before using.");
+}
+
+/*
 stpTeleOperationCursor::stpTeleOperationCursor(std::string json_file):
 mTeleopState(mName, "DISABLED")
 {
@@ -23,6 +30,7 @@ mTeleopState(mName, "DISABLED")
   ROS_ERROR("This Initialization method is not yet fully supported.");
   Init(json_file, std::__cxx11::string(), std::__cxx11::string(), emptyInit);
 }
+*/
 
 stpTeleOperationCursor::~stpTeleOperationCursor() {
 }
@@ -32,7 +40,7 @@ void stpTeleOperationCursor::Init(const std::string &filename,
                                   const std::string &cursorName,
                                   const Eigen::Isometry3d &baseframe) {
 
-  parser.openFile(filename);
+  parser.openFile(filename.c_str());
 
   // Configure the state machine
   mTeleopState.AddState("SETTING_ARMS_STATE");
@@ -66,6 +74,8 @@ void stpTeleOperationCursor::Init(const std::string &filename,
   printTopicName(MTM);
   CURSOR = cursorName;
   printTopicName(CURSOR);
+  mName = MTM + "-" + CURSOR;
+  printTopicName(mName);
   std::string FOOTPEDALS = parser.GetStringValue(controllers, "FOOTPEDAL");
   printTopicName(FOOTPEDALS);
   std::string CONSOLE = parser.GetStringValue(controllers, "dVRK-CONSOLE");
@@ -203,6 +213,10 @@ void stpTeleOperationCursor::Init(const std::string &filename,
   ConfigurationEvents.m_rotation_locked.data = false;
   ConfigurationEvents.m_translation_locked.data = false;
   ConfigurationEvents.m_align_mtm.data = true;
+
+  //Startup();
+
+  ROS_INFO("stpTeleoperation: %s successfully initialized!", mName.c_str());
 }
 
 void stpTeleOperationCursor::Startup(void) {
@@ -214,7 +228,11 @@ void stpTeleOperationCursor::Startup(void) {
 }
 
 void stpTeleOperationCursor::Run(void) {
-  mTeleopState.Run();
+  try {
+    mTeleopState.Run();
+  } catch (std::exception& e) {
+    ROS_ERROR("&s: Failed at state machine - %s", mName.c_str(), e.what());
+  }
 }
 
 void stpTeleOperationCursor::Clutch(const bool &clutch) {
@@ -354,8 +372,8 @@ void stpTeleOperationCursor::lock_translation(const bool& lock) {
 }
 
 void stpTeleOperationCursor::set_align_mtm(const bool& alignMTM) {
-  geometry_msgs::Vector3ConstPtr lockValidity;
-  lockValidity = waitForMessage<geometry_msgs::Vector3>(mMTM.topicName.lock_orientation, timeOut);
+  geometry_msgs::QuaternionConstPtr lockValidity;
+  lockValidity = waitForMessage<geometry_msgs::Quaternion>(mMTM.topicName.lock_orientation, timeOut);
   std_msgs::EmptyConstPtr unlockValidity;
   unlockValidity = waitForMessage<std_msgs::Empty>(mMTM.topicName.unlock_orientation, timeOut);
   if (lockValidity != nullptr && unlockValidity != nullptr) {

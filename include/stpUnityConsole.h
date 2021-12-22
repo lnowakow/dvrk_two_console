@@ -14,16 +14,23 @@
 
 #include <diagnostic_msgs/KeyValue.h>
 
-class stpUnityConsole : public stpTeleOperationCursor {
-
+class stpUnityConsole {
+ public:
   stpUnityConsole();
-  inline ~stpUnityConsole() {}
+  stpUnityConsole(const std::string &consoleName,
+                  const std::string &filename,
+                  const std::string &rightTeleopName,
+                  const std::string &leftTeleopName);
+  inline ~stpUnityConsole() { delete cursor_teleop; };
 
   /*! Configure console using JSON file. To test if the configuration successed, use method Configured() */
   void Configure(const std::string& filename);
 
   /*! Method to check if the configuration was successful, ideally called after a call to Configure */
   const bool & Configured(void) const;
+
+  /*! Set whether the user wants right or left handed control */
+  void DominantHand(const std::string &hand);
 
   void Startup(void);
   void Run(void);
@@ -34,7 +41,7 @@ class stpUnityConsole : public stpTeleOperationCursor {
  protected:
   bool mConfigured;
   bool mTeleopEnabled;
-  bool mTeleopCursorRunning;
+  bool mTeleopCURSORRunning;
   bool mTeleopCursorAligning;
 
   bool ConfigureCursorTeleopJSON(const stpJsonParser& jsonTeleop);
@@ -48,18 +55,42 @@ class stpUnityConsole : public stpTeleOperationCursor {
   void UpdateTeleopState(void);
 
   struct {
-    stpWrite teleop_enabled;
-  } console_events;
+    struct {
+      std::string select_teleop_psm;
+    } topicName;
+    stpWrite select_teleop_psm;
+
+    diagnostic_msgs::KeyValue m_select_teleop_psm;
+  } dVRK_console_events;
 
   struct {
+    struct {
+      std::string read_teleop_cursor;
+    } topicName;
+    stpRead read_teleop_cursor;
+
+    diagnostic_msgs::KeyValue m_read_teleop_cursor;
+  } stp_console_events;
+
+  struct {
+    struct {
+      std::string teleop_psm_selected;
+      std::string teleop_psm_unselected;
+    } topicName;
     stpWrite teleop_psm_selected;
     stpWrite teleop_psm_unselected;
-  } ConfigurationEvents;
+  } dVRKConfigurationEvents;
 
  private:
-  stpJsonParser parser;
-  stpTeleOperationCursor right_teleop, left_teleop;
 
+  ros::NodeHandle nh;
+
+  stpJsonParser parser;
+  std::string console_name;
+  stpTeleOperationCursor right_teleop, left_teleop;
+  stpTeleOperationCursor* cursor_teleop = nullptr;
+
+  void stp_console_select_teleop_cursor_cb(const diagnostic_msgs::KeyValueConstPtr& msg);
 
 };
 
