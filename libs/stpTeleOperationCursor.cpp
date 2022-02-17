@@ -229,6 +229,7 @@ void stpTeleOperationCursor::Startup(void) {
 
 void stpTeleOperationCursor::Run(void) {
   try {
+    ROS_INFO("%s: Current state: %s", this->mName.c_str(), this->mTeleopState.CurrentState().c_str());
     mTeleopState.Run();
   } catch (std::exception& e) {
     ROS_ERROR("&s: Failed at state machine - %s", mName.c_str(), e.what());
@@ -457,6 +458,7 @@ void stpTeleOperationCursor::RunAllStates(void) {
 
 void stpTeleOperationCursor::TransitionDisabled(void) {
   ROS_INFO("Attempting transition away from disabled.");
+  ROS_INFO("Current State: %s", mTeleopState.DesiredState().c_str());
   if (mTeleopState.DesiredStateIsNotCurrent()) {
     ROS_INFO("Desired state is not current state");
     mTeleopState.SetCurrentState("SETTING_ARMS_STATE");
@@ -605,6 +607,7 @@ void stpTeleOperationCursor::EnterEnabled(void) {
 }
 
 void stpTeleOperationCursor::RunEnabled(void) {
+  ROS_INFO("%s: in RunEnabled.", this->mName.c_str());
   if (mMTM.m_measured_cp.isValid(mMTM.topicName.measured_cp)
     && mCURSOR.m_measured_cp.isValid(mCURSOR.topicName.measured_cp)) {
     // follow mode

@@ -39,11 +39,14 @@ void stpUnityConsole::Configure(const std::string &filename) {
   left_teleop.Init(default_config_file, mtmlName, lCursorName, lBaseframe);
 
   stp_console_events.topicName.read_teleop_cursor = console_name + "/teleop/read_teleop_cursor";
+  stp_console_events.topicName.teleop_enabled = console_name + "/teleop/teleop_enabled";
 
   stp_console_events.read_teleop_cursor = nh.subscribe(stp_console_events.topicName.read_teleop_cursor,
                                                        10,
                                                        &stpUnityConsole::stp_console_select_teleop_cursor_cb,
                                                        this);
+  stp_console_events.teleop_enabled = nh.advertise<std_msgs::Bool>(stp_console_events.topicName.teleop_enabled, 10);
+
   DominantHand("right");
 
   ROS_INFO("stpUnityConsole: %s successfully initialized!", console_name.c_str());
@@ -72,6 +75,7 @@ void stpUnityConsole::Startup(void) {
 
 void stpUnityConsole::Run(void) {
   try {
+    ros::spinOnce();
     cursor_teleop->Run();
   } catch (std::exception& e) {
     ROS_ERROR("%s: Failed with %s", console_name.c_str(), e.what());
@@ -90,7 +94,10 @@ bool stpUnityConsole::ConfigureCursorTeleopJSON(const stpJsonParser &jsonTeleop)
 }
 
 void stpUnityConsole::teleop_enable(const bool &enable) {
-
+  mTeleopEnabled = enable;
+  mTeleopDesired = enable;
+  stp_console_events.teleop_enabled.publish(mTeleopEnabled);
+  UpdateTeleopState();
 }
 
 void stpUnityConsole::cycle_teleop_psm_by_mtm(const std::string &mtmName) {
@@ -98,6 +105,8 @@ void stpUnityConsole::cycle_teleop_psm_by_mtm(const std::string &mtmName) {
 }
 
 void stpUnityConsole::select_teleop_psm(const diagnostic_msgs::KeyValue mtmCURSOR) {
+
+
   // For readability
   const std::string mtmName = mtmCURSOR.key;
   const std::string cursorName = mtmCURSOR.value;
@@ -133,7 +142,6 @@ void stpUnityConsole::select_teleop_psm(const diagnostic_msgs::KeyValue mtmCURSO
     selectedTeleop->state_command(std::string("align_mtm"));
   }
   ROS_INFO("%s: teleop %s has been selected.", this->console_name.c_str(), selectedTeleop->getTeleopName().c_str());
-
 }
 
 bool stpUnityConsole::GetCursorSelectedForMTM(const std::string &mtmName, std::string &psmName) const {
@@ -156,6 +164,7 @@ void stpUnityConsole::UpdateTeleopState(void) {
 }
 
 void stpUnityConsole::stp_console_select_teleop_cursor_cb(const diagnostic_msgs::KeyValueConstPtr& msg) {
+  ROS_WARN("CALLBACK RECEIVED: IN SELECT TELEOP PSM");
   stp_console_events.m_read_teleop_cursor = *msg;
   select_teleop_psm(*msg);
 }

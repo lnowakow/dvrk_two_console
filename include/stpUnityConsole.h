@@ -41,6 +41,7 @@ class stpUnityConsole {
  protected:
   bool mConfigured;
   bool mTeleopEnabled;
+  bool mTeleopDesired;
   bool mTeleopCURSORRunning;
   bool mTeleopCursorAligning;
 
@@ -66,10 +67,13 @@ class stpUnityConsole {
   struct {
     struct {
       std::string read_teleop_cursor;
+      std::string teleop_enabled;
     } topicName;
     stpRead read_teleop_cursor;
+    stpWrite teleop_enabled;
 
     diagnostic_msgs::KeyValue m_read_teleop_cursor;
+    bool m_teleop_enabled;
   } stp_console_events;
 
   struct {
