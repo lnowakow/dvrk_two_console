@@ -160,7 +160,19 @@ void stpUnityConsole::UpdateTeleopState(void) {
   // Check if teleop is enabled
   if (!mTeleopEnabled) {
     bool freezeNeeded = false;
+    cursor_teleop->state_command(std::string("disabled"));
+    if (mTeleopCURSORRunning) {
+      freezeNeeded = true;
+    }
+    mTeleopCURSORRunning = false;
+
+    if (freezeNeeded) {
+
+    }
   }
+
+
+
 }
 
 void stpUnityConsole::stp_console_select_teleop_cursor_cb(const diagnostic_msgs::KeyValueConstPtr& msg) {

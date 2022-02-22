@@ -105,6 +105,10 @@ void stpTeleOperationCursor::Init(const std::string &filename,
   printTopicName(mMTM.topicName.setpoint_cp);
   mMTM.topicName.move_cp = MTM + parser.GetStringValue("mMTM", "move_cp");
   printTopicName(mMTM.topicName.move_cp);
+  mMTM.topicName.servo_jf = MTM + parser.GetStringValue("mMTM", "servo_jf");
+  printTopicName(mMTM.topicName.servo_jf);
+  mMTM.topicName.setpoint_js = MTM + parser.GetStringValue("mMTM", "setpoint_js");
+  printTopicName(mMTM.topicName.setpoint_js);
   mMTM.topicName.gripper_measured_js = MTM + parser.GetStringValue("mMTM", "gripper_measured_js");
   printTopicName(mMTM.topicName.gripper_measured_js);
   mMTM.topicName.gripper_closed = MTM + parser.GetStringValue("mMTM", "gripper_closed");
@@ -160,6 +164,12 @@ void stpTeleOperationCursor::Init(const std::string &filename,
                                   this);
   mMTM.move_cp = nh.advertise<geometry_msgs::TransformStamped>(mMTM.topicName.move_cp,
                                                                COMMAND_QUEUE);
+  mMTM.servo_jf = nh.advertise<sensor_msgs::JointState>(mMTM.topicName.servo_jf,
+                                                        COMMAND_QUEUE);
+  mMTM.setpoint_js = nh.subscribe(mMTM.topicName.setpoint_js,
+                                  COMMAND_QUEUE,
+                                  &stpTeleOperationCursor::mtm_setpoint_js_cb,
+                                  this);
   mMTM.gripper_measured_js = nh.subscribe(mMTM.topicName.gripper_measured_js,
                                           COMMAND_QUEUE,
                                           &stpTeleOperationCursor::mtm_gripper_measured_js_cb,
@@ -687,6 +697,10 @@ void stpTeleOperationCursor::mtm_operating_state_cb(const crtk_msgs::operating_s
   mMTM.m_operating_state = *msg;
 }
 
+void stpTeleOperationCursor::mtm_setpoint_js_cb(const sensor_msgs::JointState::ConstPtr &msg) {
+  mMTM.m_setpoint_js = *msg;
+}
+
 void stpTeleOperationCursor::cursor_measured_cp_cb(const geometry_msgs::TransformStamped::ConstPtr &msg) {
   mCURSOR.m_measured_cp.GetROSMessage(*msg);
 }
@@ -702,6 +716,7 @@ void stpTeleOperationCursor::cursor_operating_state_cb(const crtk_msgs::operatin
 void stpTeleOperationCursor::operator_clutch_cb(const sensor_msgs::Joy::ConstPtr &msg) {
   mOPERATOR.m_clutch = *msg;
 }
+
 
 
 

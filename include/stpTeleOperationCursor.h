@@ -131,6 +131,8 @@ class stpTeleOperationCursor {
       std::string measured_cp;
       std::string setpoint_cp;
       std::string move_cp;
+      std::string servo_jf;
+      std::string setpoint_js;
       std::string gripper_measured_js;
       std::string gripper_closed;
       std::string lock_orientation;
@@ -144,6 +146,8 @@ class stpTeleOperationCursor {
     stpRead measured_cp;
     stpRead setpoint_cp;
     stpWrite move_cp;
+    stpWrite servo_jf;
+    stpRead setpoint_js;
     stpRead gripper_measured_js;
     stpRead gripper_closed;
     stpWrite lock_orientation;
@@ -154,6 +158,7 @@ class stpTeleOperationCursor {
     stpRead operating_state;
     stpWrite state_command;
 
+    sensor_msgs::JointState m_setpoint_js;
     sensor_msgs::JointState m_gripper_measured_js;
     std_msgs::Bool m_gripper_closed;
     stpMatrix m_measured_cp;
@@ -240,6 +245,7 @@ class stpTeleOperationCursor {
   void mtm_gripper_measured_js_cb(const sensor_msgs::JointState::ConstPtr& msg);
   void mtm_gripper_closed_cb(const std_msgs::Bool::ConstPtr& msg);
   void mtm_operating_state_cb(const crtk_msgs::operating_state::ConstPtr& msg);
+  void mtm_setpoint_js_cb(const sensor_msgs::JointState::ConstPtr& msg);
   // mCURSOR Callbacks
   void cursor_measured_cp_cb(const geometry_msgs::TransformStamped::ConstPtr& msg);
   void cursor_clicked_cb(const std_msgs::Bool::ConstPtr& msg);

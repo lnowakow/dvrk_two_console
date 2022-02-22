@@ -18,6 +18,8 @@
     "measured_cp" : "/measured_cp",
     "setpoint_cp" : "/setpoint_cp",
     "move_cp" : "/move_cp",
+    "servo_jf" : "/servo_jf",
+    "setpoint_js": "/setpoint_js",
     "gripper_measured_js" : "/gripper/measured_js",
     "gripper_closed" : "/gripper/closed",
     "lock_orientation" : "/lock_orientation",
