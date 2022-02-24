@@ -105,8 +105,8 @@ void stpTeleOperationCursor::Init(const std::string &filename,
   printTopicName(mMTM.topicName.setpoint_cp);
   mMTM.topicName.move_cp = MTM + parser.GetStringValue("mMTM", "move_cp");
   printTopicName(mMTM.topicName.move_cp);
-  mMTM.topicName.servo_jf = MTM + parser.GetStringValue("mMTM", "servo_jf");
-  printTopicName(mMTM.topicName.servo_jf);
+  mMTM.topicName.servo_jp = MTM + parser.GetStringValue("mMTM", "servo_jp");
+  printTopicName(mMTM.topicName.servo_jp);
   mMTM.topicName.setpoint_js = MTM + parser.GetStringValue("mMTM", "setpoint_js");
   printTopicName(mMTM.topicName.setpoint_js);
   mMTM.topicName.gripper_measured_js = MTM + parser.GetStringValue("mMTM", "gripper_measured_js");
@@ -164,7 +164,7 @@ void stpTeleOperationCursor::Init(const std::string &filename,
                                   this);
   mMTM.move_cp = nh.advertise<geometry_msgs::TransformStamped>(mMTM.topicName.move_cp,
                                                                COMMAND_QUEUE);
-  mMTM.servo_jf = nh.advertise<sensor_msgs::JointState>(mMTM.topicName.servo_jf,
+  mMTM.servo_jp = nh.advertise<sensor_msgs::JointState>(mMTM.topicName.servo_jp,
                                                         COMMAND_QUEUE);
   mMTM.setpoint_js = nh.subscribe(mMTM.topicName.setpoint_js,
                                   COMMAND_QUEUE,
@@ -400,6 +400,10 @@ void stpTeleOperationCursor::set_align_mtm(const bool& alignMTM) {
   if (mTeleopState.CurrentState() == "ENABLED") {
     mTeleopState.SetCurrentState("DISABLED");
   }
+}
+
+void stpTeleOperationCursor::Freeze(void) {
+  mMTM.servo_jp.publish(mMTM.setpoint_js);
 }
 
 void stpTeleOperationCursor::StateChanged(void) {
@@ -672,6 +676,8 @@ void stpTeleOperationCursor::TransitionEnabled(void) {
     mTeleopState.SetCurrentState(mTeleopState.DesiredState());
   }
 }
+
+
 
 void stpTeleOperationCursor::set_following(const bool following) {
   m_following = following;

@@ -52,6 +52,7 @@ class stpTeleOperationCursor {
   void lock_rotation(const bool& lock);
   void lock_translation(const bool& lock);
   void set_align_mtm(const bool& alignMTM);
+  void Freeze(void);
 
   void Init(const std::string &filename,
             const std::string &mtmName,
@@ -126,12 +127,13 @@ class stpTeleOperationCursor {
   void RunEnabled(void);
   void TransitionEnabled(void);
 
+
   struct {
     struct {
       std::string measured_cp;
       std::string setpoint_cp;
       std::string move_cp;
-      std::string servo_jf;
+      std::string servo_jp;
       std::string setpoint_js;
       std::string gripper_measured_js;
       std::string gripper_closed;
@@ -146,7 +148,7 @@ class stpTeleOperationCursor {
     stpRead measured_cp;
     stpRead setpoint_cp;
     stpWrite move_cp;
-    stpWrite servo_jf;
+    stpWrite servo_jp;
     stpRead setpoint_js;
     stpRead gripper_measured_js;
     stpRead gripper_closed;

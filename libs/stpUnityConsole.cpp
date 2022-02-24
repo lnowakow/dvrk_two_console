@@ -38,6 +38,7 @@ void stpUnityConsole::Configure(const std::string &filename) {
   Eigen::Isometry3d lBaseframe = parser.GetMatrixValue(console_name, "MTML", "BASEFRAME");
   left_teleop.Init(default_config_file, mtmlName, lCursorName, lBaseframe);
 
+  // stpConsoleEvents
   stp_console_events.topicName.read_teleop_cursor = console_name + "/teleop/read_teleop_cursor";
   stp_console_events.topicName.teleop_enabled = console_name + "/teleop/teleop_enabled";
 
@@ -46,8 +47,18 @@ void stpUnityConsole::Configure(const std::string &filename) {
                                                        &stpUnityConsole::stp_console_select_teleop_cursor_cb,
                                                        this);
   stp_console_events.teleop_enabled = nh.advertise<std_msgs::Bool>(stp_console_events.topicName.teleop_enabled, 10);
-
+  // Choose Dominant Hand
   DominantHand("right");
+
+  // dVRKConsoleEvents
+  dVRK_console_events.topicName.operator_present = "/console/operator_present"; // Change JSON config formats.
+  dVRK_console_events.operator_present = nh.subscribe(dVRK_console_events.topicName.operator_present,
+                                                      10,
+                                                      &stpUnityConsole::dvrk_console_events_operator_present_cb,
+                                                      this);
+
+
+
 
   ROS_INFO("stpUnityConsole: %s successfully initialized!", console_name.c_str());
   mConfigured = true;
@@ -167,16 +178,38 @@ void stpUnityConsole::UpdateTeleopState(void) {
     mTeleopCURSORRunning = false;
 
     if (freezeNeeded) {
-
+      right_teleop.Freeze();
+      left_teleop.Freeze();
     }
   }
 
+  // if none are running, freeze
+  if (!mTeleopCURSORRunning) {
+    right_teleop.Freeze();
+    left_teleop.Freeze();
+  }
+
+  bool readyForTeleop = mOperatorPresent;
+
+  // Not considering SUJ clutches for this
+  // Check if operator is present
+  if (!readyForTeleop) {
+    // keep MTMs aligned
+    cursor_teleop->state_command("align_mtm");
+  }
 
 
 }
 
 void stpUnityConsole::stp_console_select_teleop_cursor_cb(const diagnostic_msgs::KeyValueConstPtr& msg) {
-  ROS_WARN("CALLBACK RECEIVED: IN SELECT TELEOP PSM");
   stp_console_events.m_read_teleop_cursor = *msg;
   select_teleop_psm(*msg);
+}
+
+void stpUnityConsole::dvrk_console_events_operator_present_cb(const sensor_msgs::Joy::ConstPtr& msg) {
+  if (msg->buttons[0] == 1) {
+    mOperatorPresent = true;
+  } else {
+    mOperatorPresent = false;
+  }
 }

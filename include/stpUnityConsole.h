@@ -44,6 +44,7 @@ class stpUnityConsole {
   bool mTeleopDesired;
   bool mTeleopCURSORRunning;
   bool mTeleopCursorAligning;
+  bool mOperatorPresent;
 
   bool ConfigureCursorTeleopJSON(const stpJsonParser& jsonTeleop);
 
@@ -58,8 +59,10 @@ class stpUnityConsole {
   struct {
     struct {
       std::string select_teleop_psm;
+      std::string operator_present;
     } topicName;
     stpWrite select_teleop_psm;
+    stpRead operator_present;
 
     diagnostic_msgs::KeyValue m_select_teleop_psm;
   } dVRK_console_events;
@@ -95,6 +98,7 @@ class stpUnityConsole {
   stpTeleOperationCursor* cursor_teleop = nullptr;
 
   void stp_console_select_teleop_cursor_cb(const diagnostic_msgs::KeyValueConstPtr& msg);
+  void dvrk_console_events_operator_present_cb(const sensor_msgs::Joy::ConstPtr& msg);
 
 };
 
