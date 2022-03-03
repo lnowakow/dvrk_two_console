@@ -73,6 +73,14 @@ class stpTeleOperationCursor {
     return CURSOR;
   }
 
+  inline const bool & Selected(void) const {
+    return mSelected;
+  }
+
+  inline void SetSelected(const bool selected) {
+    mSelected = selected;
+  }
+
  protected:
 
   void Clutch(const bool& clutch);
@@ -230,6 +238,7 @@ class stpTeleOperationCursor {
 
   bool m_back_from_clutch = false;
   bool m_following;
+  bool mSelected;
 
   void set_following(const bool following);
 

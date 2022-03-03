@@ -46,11 +46,11 @@ class stpUnityConsole {
   bool mTeleopCursorAligning;
   bool mOperatorPresent;
 
-  bool ConfigureCursorTeleopJSON(const stpJsonParser& jsonTeleop);
+  bool ConfigureCursorTeleopJSON(const std::string &mtm_Name, const std::string &default_config_file);
 
   void teleop_enable(const bool& enable);
   void cycle_teleop_psm_by_mtm(const std::string& mtmName);
-  void select_teleop_psm(const diagnostic_msgs::KeyValue mtmPSM);
+  void select_teleop_cursor(const diagnostic_msgs::KeyValue mtmPSM);
   bool GetCursorSelectedForMTM(const std::string& mtmName, std::string& psmName) const;
   bool GetMTMSelectedForCursor(const std::string& cursorName, std::string& mtmName) const;
   void EventSelectedTeleopTeleopCursors(void) const;
@@ -96,6 +96,10 @@ class stpUnityConsole {
   std::string console_name;
   stpTeleOperationCursor right_teleop, left_teleop;
   stpTeleOperationCursor* cursor_teleop = nullptr;
+
+  using TeleopCursorList = std::map<std::string, stpTeleOperationCursor *>;
+  TeleopCursorList mTeleopsCursor;
+
 
   void stp_console_select_teleop_cursor_cb(const diagnostic_msgs::KeyValueConstPtr& msg);
   void dvrk_console_events_operator_present_cb(const sensor_msgs::Joy::ConstPtr& msg);
