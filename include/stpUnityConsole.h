@@ -42,7 +42,7 @@ class stpUnityConsole {
   bool mConfigured;
   bool mTeleopEnabled;
   bool mTeleopDesired;
-  bool mTeleopCURSORRunning;
+  bool mTeleopCursorRunning;
   bool mTeleopCursorAligning;
   bool mOperatorPresent;
 
@@ -53,7 +53,7 @@ class stpUnityConsole {
   void select_teleop_cursor(const diagnostic_msgs::KeyValue mtmPSM);
   bool GetCursorSelectedForMTM(const std::string& mtmName, std::string& psmName) const;
   bool GetMTMSelectedForCursor(const std::string& cursorName, std::string& mtmName) const;
-  void EventSelectedTeleopTeleopCursors(void) const;
+  void EventSelectedTeleopCursors(void) const;
   void UpdateTeleopState(void);
 
   struct {
@@ -70,9 +70,13 @@ class stpUnityConsole {
   struct {
     struct {
       std::string read_teleop_cursor;
+      std::string teleop_cursor_selected;
+      std::string teleop_cursor_unselected;
       std::string teleop_enabled;
     } topicName;
     stpRead read_teleop_cursor;
+    stpWrite teleop_cursor_selected;
+    stpWrite teleop_cursor_unselected;
     stpWrite teleop_enabled;
 
     diagnostic_msgs::KeyValue m_read_teleop_cursor;

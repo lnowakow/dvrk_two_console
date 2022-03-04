@@ -28,24 +28,30 @@ void stpUnityConsole::Configure(const std::string &filename) {
 
   // Console 1 Teleoperation configuration
   // Right Hand
-  std::string mtmrName = parser.GetStringValue(console_name, "MTMR", "name");
-  std::string rCursorName = parser.GetStringValue(console_name, "MTMR", "CURSOR");
-  Eigen::Isometry3d rBaseframe = parser.GetMatrixValue(console_name, "MTMR", "BASEFRAME");
-  right_teleop.Init(default_config_file, mtmrName, rCursorName, rBaseframe);
+  ConfigureCursorTeleopJSON("MTMR", default_config_file);
+//  std::string mtmrName = parser.GetStringValue(console_name, "MTMR", "name");
+//  std::string rCursorName = parser.GetStringValue(console_name, "MTMR", "CURSOR");
+//  Eigen::Isometry3d rBaseframe = parser.GetMatrixValue(console_name, "MTMR", "BASEFRAME");
+//  right_teleop.Init(default_config_file, mtmrName, rCursorName, rBaseframe);
   // Left Hand
-  std::string mtmlName = parser.GetStringValue(console_name, "MTML", "name");
-  std::string lCursorName = parser.GetStringValue(console_name, "MTML", "CURSOR");
-  Eigen::Isometry3d lBaseframe = parser.GetMatrixValue(console_name, "MTML", "BASEFRAME");
-  left_teleop.Init(default_config_file, mtmlName, lCursorName, lBaseframe);
+  ConfigureCursorTeleopJSON("MTML", default_config_file);
+//  std::string mtmlName = parser.GetStringValue(console_name, "MTML", "name");
+//  std::string lCursorName = parser.GetStringValue(console_name, "MTML", "CURSOR");
+//  Eigen::Isometry3d lBaseframe = parser.GetMatrixValue(console_name, "MTML", "BASEFRAME");
+//  left_teleop.Init(default_config_file, mtmlName, lCursorName, lBaseframe);
 
   // stpConsoleEvents
   stp_console_events.topicName.read_teleop_cursor = console_name + "/teleop/read_teleop_cursor";
+  stp_console_events.topicName.teleop_cursor_selected = console_name + "/teleop/teleop_cursor_selected";
+  stp_console_events.topicName.teleop_cursor_unselected = console_name + "/teleop/teleop_cursor_unselected";
   stp_console_events.topicName.teleop_enabled = console_name + "/teleop/teleop_enabled";
 
   stp_console_events.read_teleop_cursor = nh.subscribe(stp_console_events.topicName.read_teleop_cursor,
                                                        10,
                                                        &stpUnityConsole::stp_console_select_teleop_cursor_cb,
                                                        this);
+  stp_console_events.teleop_cursor_selected = nh.advertise<diagnostic_msgs::KeyValue>(stp_console_events.topicName.teleop_cursor_selected, 10);
+  stp_console_events.teleop_cursor_unselected = nh.advertise<diagnostic_msgs::KeyValue>(stp_console_events.topicName.teleop_cursor_unselected, 10);
   stp_console_events.teleop_enabled = nh.advertise<std_msgs::Bool>(stp_console_events.topicName.teleop_enabled, 10);
   // Choose Dominant Hand
   DominantHand("right");
@@ -151,37 +157,49 @@ void stpUnityConsole::select_teleop_cursor(const diagnostic_msgs::KeyValue mtmCU
   const std::string mtmName = mtmCURSOR.key;
   const std::string cursorName = mtmCURSOR.value;
 
-  // determine for which teleop pair this command is sent for
-  stpTeleOperationCursor* selectedTeleop;
-  if (right_teleop.getMTMName() == mtmName) {
-    selectedTeleop = &right_teleop;
-  } else if (left_teleop.getMTMName() == mtmName) {
-    selectedTeleop = &left_teleop;
-  } else {
-    ROS_ERROR("%s: teleop key value \"%s\"is not a valid possibility", this->console_name.c_str(), mtmName.c_str());
-    return;
-  }
 
   // if the cursor string is empty, disable teleop for the given mtm
   if (cursorName == "") {
-    selectedTeleop->state_command(std::string("disable"));
-    ROS_INFO("%s: teleop %s has been unselected.", this->console_name.c_str(), selectedTeleop->getTeleopName().c_str());
+    auto range = mTeleopsCursor.equal_range(mtmName);
+    for (auto iter = range.first; iter != range.second; ++iter) {
+      // look for the teleop that was selected if any
+      if (iter->second->Selected()) {
+        iter->second->SetSelected(false);
+        // if teleop Cursor is active, enable/disable components now
+        if (mTeleopEnabled) {
+          iter->second->state_command(std::string("disabled"));
+        }
+        ROS_INFO("%s: teleop \"%s\" has been unselected. ", this->console_name.c_str(), iter->second->getTeleopName().c_str());
+      }
+    }
+    EventSelectedTeleopCursors();
     return;
   }
 
   // actual teleop to select
+  std::string name = mtmName + "-" + cursorName;
+  const auto teleopIterator = mTeleopsCursor.find(name);
+  if (teleopIterator == mTeleopsCursor.end()) {
+    ROS_ERROR("%s: unable to select \"%s\", this component does not exist.", this->console_name.c_str(), name.c_str());
+    EventSelectedTeleopCursors();
+    return;
+  }
   // do a redundant check that the desired mtm's teleop is unselected
   diagnostic_msgs::KeyValue emptyMessage;
   emptyMessage.key = mtmName;
   emptyMessage.value = "";
   select_teleop_cursor(emptyMessage);
-
-  if (mTeleopCURSORRunning) {
-    selectedTeleop->state_command(std::string("enable"));
-  } else {
-    selectedTeleop->state_command(std::string("align_mtm"));
+  // now turn on teleop
+  teleopIterator->second->SetSelected(true);
+  if (mTeleopEnabled) {
+    if (mTeleopCursorRunning) {
+      teleopIterator->second->state_command(std::string("enable"));
+    } else {
+      teleopIterator->second->state_command(std::string("align_mtm"));
+    }
   }
-  ROS_INFO("%s: teleop %s has been selected.", this->console_name.c_str(), selectedTeleop->getTeleopName().c_str());
+  ROS_INFO("%s: teleop %s has been selected.", this->console_name.c_str(), teleopIterator->second->getTeleopName().c_str());
+  EventSelectedTeleopCursors();
 }
 
 bool stpUnityConsole::GetCursorSelectedForMTM(const std::string &mtmName, std::string &psmName) const {
@@ -192,41 +210,64 @@ bool stpUnityConsole::GetMTMSelectedForCursor(const std::string &cursorName, std
   return false;
 }
 
-void stpUnityConsole::EventSelectedTeleopTeleopCursors(void) const {
-
+void stpUnityConsole::EventSelectedTeleopCursors(void) const {
+  for (auto &iter : mTeleopsCursor) {
+    if (iter.second->Selected()) {
+      diagnostic_msgs::KeyValue message;
+      message.key = iter.second->getMTMName();
+      message.value = iter.second->getCURSORName();
+      stp_console_events.teleop_cursor_selected.publish(message);
+    } else {
+      diagnostic_msgs::KeyValue message;
+      message.key = iter.second->getMTMName();
+      message.value = iter.second->getCURSORName();
+      stp_console_events.teleop_cursor_unselected.publish(message);
+    }
+  }
 }
 
 void stpUnityConsole::UpdateTeleopState(void) {
   // Check if teleop is enabled
   if (!mTeleopEnabled) {
     bool freezeNeeded = false;
-    cursor_teleop->state_command(std::string("disabled"));
-    if (mTeleopCURSORRunning) {
-      freezeNeeded = true;
+    for (auto & iterTeleopCursor : mTeleopsCursor) {
+      iterTeleopCursor.second->state_command(std::string("disable"));
+      if (mTeleopCursorRunning) {
+        freezeNeeded = true;
+      }
+      mTeleopCursorRunning = false;
     }
-    mTeleopCURSORRunning = false;
-
     if (freezeNeeded) {
-      right_teleop.Freeze();
-      left_teleop.Freeze();
+      for (auto & iterTeleopCursor : mTeleopsCursor) {
+        iterTeleopCursor.second->Freeze();
+      }
     }
+    return;
   }
 
   // if none are running, freeze
-  if (!mTeleopCURSORRunning) {
-    right_teleop.Freeze();
-    left_teleop.Freeze();
+  if (!mTeleopCursorRunning) {
+    for (auto & iterTeleopCursor : mTeleopsCursor) {
+      iterTeleopCursor.second->Freeze();
+    }
   }
-
+   // all fine
   bool readyForTeleop = mOperatorPresent;
 
   // Not considering SUJ clutches for this
   // Check if operator is present
   if (!readyForTeleop) {
     // keep MTMs aligned
-    cursor_teleop->state_command("align_mtm");
+    for (auto & iterTeleopCursor : mTeleopsCursor) {
+      if (iterTeleopCursor.second->Selected()) {
+        iterTeleopCursor.second->state_command(std::string("align_mtm"));
+      } else {
+        iterTeleopCursor.second->state_command(std::string("disable"));
+      }
+    }
+    mTeleopCursorRunning = false;
+    return;
   }
-
 
 }
 
