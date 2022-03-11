@@ -242,7 +242,7 @@ void stpTeleOperationCursor::Run(void) {
     ROS_INFO("%s: Current state: %s", this->mName.c_str(), this->mTeleopState.CurrentState().c_str());
     mTeleopState.Run();
   } catch (std::exception& e) {
-    ROS_ERROR("&s: Failed at state machine - %s", mName.c_str(), e.what());
+    ROS_ERROR("%s: Failed at state machine - %s", mName.c_str(), e.what());
   }
 }
 
@@ -403,7 +403,7 @@ void stpTeleOperationCursor::set_align_mtm(const bool& alignMTM) {
 }
 
 void stpTeleOperationCursor::Freeze(void) {
-  mMTM.servo_jp.publish(mMTM.setpoint_js);
+  mMTM.servo_jp.publish(mMTM.m_setpoint_js);
 }
 
 void stpTeleOperationCursor::StateChanged(void) {
@@ -456,12 +456,12 @@ void stpTeleOperationCursor::RunAllStates(void) {
   //ROS_INFO("In RunAllStates: mTeleopState's current state is %s: ", mTeleopState.CurrentState().c_str());
   // Monitor state of arms if needed
   if ((mTeleopState.CurrentState() != "DISABLED") && (mTeleopState.CurrentState() != "SETTING_ARMS_STATE")) {
-    ROS_INFO("mCURSOR operating state: %s, mCURSOR is_homed: %s", mCURSOR.m_operating_state.state.c_str(), mCURSOR.m_operating_state.is_homed);
+    ROS_INFO("mCURSOR operating state: %s, mCURSOR is_homed: %i", mCURSOR.m_operating_state.state.c_str(), mCURSOR.m_operating_state.is_homed);
     if (mCURSOR.m_operating_state.state != "ENABLED" || !mCURSOR.m_operating_state.is_homed) {
       ROS_INFO("%s: CURSOR is not in state \"ENABLED\" anymore", this->mName.c_str());
       mTeleopState.SetDesiredState("DISABLED");
     }
-    ROS_INFO("mMTM operating state: %s, mMTM is_homed: %s", mMTM.m_operating_state.state.c_str(), mMTM.m_operating_state.is_homed);
+    ROS_INFO("mMTM operating state: %s, mMTM is_homed: %i", mMTM.m_operating_state.state.c_str(), mMTM.m_operating_state.is_homed);
     if (mMTM.m_operating_state.state != "ENABLED" || !mMTM.m_operating_state.is_homed) {
       ROS_INFO("%s: MTM is not in state \"ENABLED\" anymore", this->mName.c_str());
       mTeleopState.SetDesiredState("DISABLED");

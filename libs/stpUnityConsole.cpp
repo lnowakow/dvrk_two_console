@@ -143,7 +143,10 @@ bool stpUnityConsole::Connect(void) {
 void stpUnityConsole::teleop_enable(const bool &enable) {
   mTeleopEnabled = enable;
   mTeleopDesired = enable;
-  stp_console_events.teleop_enabled.publish(mTeleopEnabled);
+
+  std_msgs::Bool msg;
+  msg.data = enable;
+  stp_console_events.teleop_enabled.publish(msg);
   UpdateTeleopState();
 }
 
