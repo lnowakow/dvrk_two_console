@@ -95,7 +95,7 @@ class stpUnityConsole {
 
   stpJsonParser parser;
   std::string console_name;
-  stpTeleOperationCursor right_teleop, left_teleop;
+  //stpTeleOperationCursor right_teleop, left_teleop;
   stpTeleOperationCursor* cursor_teleop = nullptr;
 
   using TeleopCursorList = std::map<std::string, stpTeleOperationCursor *>;

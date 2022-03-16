@@ -282,6 +282,7 @@ void stpTeleOperationCursor::Clutch(const bool &clutch) {
 
 void stpTeleOperationCursor::state_command(const std::string& command) {
   if (command == "enable") {
+    ROS_INFO("Setting desired state to enable");
     SetDesiredState("ENABLED");
     return;
   }
@@ -290,6 +291,7 @@ void stpTeleOperationCursor::state_command(const std::string& command) {
     return;
   }
   if (command == "align_mtm") {
+    ROS_INFO("Setting desired state to align mtms");
     SetDesiredState("ALIGNING_MTM");
     return;
   }
@@ -467,12 +469,12 @@ void stpTeleOperationCursor::RunAllStates(void) {
       mTeleopState.SetDesiredState("DISABLED");
     }
   }
-  ROS_INFO("Nothing is actively disabling teleop.");
+  //ROS_INFO("Nothing is actively disabling teleop.");
 }
 
 void stpTeleOperationCursor::TransitionDisabled(void) {
   ROS_INFO("Attempting transition away from disabled.");
-  ROS_INFO("Current State: %s", mTeleopState.DesiredState().c_str());
+  ROS_INFO("Current State: %s", mTeleopState.CurrentState().c_str());
   if (mTeleopState.DesiredStateIsNotCurrent()) {
     ROS_INFO("Desired state is not current state");
     mTeleopState.SetCurrentState("SETTING_ARMS_STATE");

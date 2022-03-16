@@ -11,9 +11,10 @@ stpUnityConsole::stpUnityConsole() {
 stpUnityConsole::stpUnityConsole(const std::string &consoleName,
                                  const std::string &filename,
                                  const std::string &rightTeleopName,
-                                 const std::string &leftTeleopName) :
+                                 const std::string &leftTeleopName)
+                                 /*:
                                  right_teleop(rightTeleopName),
-                                 left_teleop(leftTeleopName)
+                                 left_teleop(leftTeleopName)*/
                                  {
   console_name = consoleName;
   ROS_INFO("Console name: %s", console_name.c_str());
@@ -54,7 +55,7 @@ void stpUnityConsole::Configure(const std::string &filename) {
   stp_console_events.teleop_cursor_unselected = nh.advertise<diagnostic_msgs::KeyValue>(stp_console_events.topicName.teleop_cursor_unselected, 10);
   stp_console_events.teleop_enabled = nh.advertise<std_msgs::Bool>(stp_console_events.topicName.teleop_enabled, 10);
   // Choose Dominant Hand
-  DominantHand("right");
+  //DominantHand("right");
 
   // dVRKConsoleEvents
   dVRK_console_events.topicName.operator_present = "/console/operator_present"; // Change JSON config formats.
@@ -109,6 +110,7 @@ const bool & stpUnityConsole::Configured(void) const {
 }
 
 void stpUnityConsole::DominantHand(const std::string &hand) {
+  /*
   if (hand == "right") {
     cursor_teleop = &right_teleop;
   } else if (hand == "left") {
@@ -118,7 +120,7 @@ void stpUnityConsole::DominantHand(const std::string &hand) {
     return;
   }
   ROS_INFO("%s: Dominant hand selected for Unity cursor functions: %s hand", this->console_name.c_str(), hand.c_str());
-
+*/
 }
 
 void stpUnityConsole::Startup(void) {
@@ -127,7 +129,11 @@ void stpUnityConsole::Startup(void) {
 void stpUnityConsole::Run(void) {
   try {
     ros::spinOnce();
-    cursor_teleop->Run();
+    for (auto &iter : mTeleopsCursor) {
+      if (iter.second->Selected()) {
+        iter.second->Run();
+      }
+    }
   } catch (std::exception& e) {
     ROS_ERROR("%s: Failed with %s", console_name.c_str(), e.what());
   }
@@ -198,6 +204,7 @@ void stpUnityConsole::select_teleop_cursor(const diagnostic_msgs::KeyValue mtmCU
     if (mTeleopCursorRunning) {
       teleopIterator->second->state_command(std::string("enable"));
     } else {
+      ROS_INFO("select_teleop_cursor is making this enable");
       teleopIterator->second->state_command(std::string("align_mtm"));
     }
   }
@@ -276,6 +283,7 @@ void stpUnityConsole::UpdateTeleopState(void) {
 
 void stpUnityConsole::stp_console_select_teleop_cursor_cb(const diagnostic_msgs::KeyValueConstPtr& msg) {
   stp_console_events.m_select_teleop_cursor = *msg;
+  ROS_INFO("%s: Got Key: {%s} and Value: {%s}.", this->console_name.c_str(), msg->key.c_str(), msg->value.c_str());
   select_teleop_cursor(*msg);
 }
 
