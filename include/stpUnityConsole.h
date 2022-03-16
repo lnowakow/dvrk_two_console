@@ -58,28 +58,25 @@ class stpUnityConsole {
 
   struct {
     struct {
-      std::string select_teleop_psm;
       std::string operator_present;
     } topicName;
-    stpWrite select_teleop_psm;
     stpRead operator_present;
 
-    diagnostic_msgs::KeyValue m_select_teleop_psm;
   } dVRK_console_events;
 
   struct {
     struct {
-      std::string read_teleop_cursor;
+      std::string select_teleop_cursor;
       std::string teleop_cursor_selected;
       std::string teleop_cursor_unselected;
       std::string teleop_enabled;
     } topicName;
-    stpRead read_teleop_cursor;
+    stpRead select_teleop_cursor;
     stpWrite teleop_cursor_selected;
     stpWrite teleop_cursor_unselected;
     stpWrite teleop_enabled;
 
-    diagnostic_msgs::KeyValue m_read_teleop_cursor;
+    diagnostic_msgs::KeyValue m_select_teleop_cursor;
     bool m_teleop_enabled;
   } stp_console_events;
 

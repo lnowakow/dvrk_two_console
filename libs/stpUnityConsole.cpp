@@ -41,15 +41,15 @@ void stpUnityConsole::Configure(const std::string &filename) {
 //  left_teleop.Init(default_config_file, mtmlName, lCursorName, lBaseframe);
 
   // stpConsoleEvents
-  stp_console_events.topicName.read_teleop_cursor = console_name + "/teleop/read_teleop_cursor";
+  stp_console_events.topicName.select_teleop_cursor = console_name + "/teleop/select_teleop_cursor";
   stp_console_events.topicName.teleop_cursor_selected = console_name + "/teleop/teleop_cursor_selected";
   stp_console_events.topicName.teleop_cursor_unselected = console_name + "/teleop/teleop_cursor_unselected";
   stp_console_events.topicName.teleop_enabled = console_name + "/teleop/teleop_enabled";
 
-  stp_console_events.read_teleop_cursor = nh.subscribe(stp_console_events.topicName.read_teleop_cursor,
-                                                       10,
-                                                       &stpUnityConsole::stp_console_select_teleop_cursor_cb,
-                                                       this);
+  stp_console_events.select_teleop_cursor = nh.subscribe(stp_console_events.topicName.select_teleop_cursor,
+                                                         10,
+                                                         &stpUnityConsole::stp_console_select_teleop_cursor_cb,
+                                                         this);
   stp_console_events.teleop_cursor_selected = nh.advertise<diagnostic_msgs::KeyValue>(stp_console_events.topicName.teleop_cursor_selected, 10);
   stp_console_events.teleop_cursor_unselected = nh.advertise<diagnostic_msgs::KeyValue>(stp_console_events.topicName.teleop_cursor_unselected, 10);
   stp_console_events.teleop_enabled = nh.advertise<std_msgs::Bool>(stp_console_events.topicName.teleop_enabled, 10);
@@ -275,7 +275,7 @@ void stpUnityConsole::UpdateTeleopState(void) {
 }
 
 void stpUnityConsole::stp_console_select_teleop_cursor_cb(const diagnostic_msgs::KeyValueConstPtr& msg) {
-  stp_console_events.m_read_teleop_cursor = *msg;
+  stp_console_events.m_select_teleop_cursor = *msg;
   select_teleop_cursor(*msg);
 }
 
